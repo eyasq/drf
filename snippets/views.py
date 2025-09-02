@@ -12,12 +12,12 @@ from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer, UserSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
-
+from snippets.permissions import isOwnerOrReadOnly
 # Create your views here.
 
 
 class SnippetList(APIView):
-    permission_classes=[permissions.IsAuthenticatedOrReadOnly]
+    permission_classes=[permissions.IsAuthenticatedOrReadOnly, isOwnerOrReadOnly]
     def get(self,request):
         snippets = Snippet.objects.all()
         serializer = SnippetSerializer(snippets, many=True)
