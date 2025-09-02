@@ -16,10 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-
 from snippets import views
-
 urlpatterns = [
-    path('snippets', views.snippet_list),
-    path('snippets/<int:id>', views.get_snippet)
+    path('snippets/', views.SnippetList.as_view()),
+    path('snippets/<int:id>/', views.SnippetDetail.as_view())
 ]
