@@ -5,17 +5,19 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-
+from django.contrib.auth.models import User
+from rest_framework import generics
 from rest_framework.parsers import JSONParser
 from snippets.models import Snippet
-from snippets.serializers import SnippetSerializer
+from snippets.serializers import SnippetSerializer, UserSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework import permissions
 
 # Create your views here.
 
 
 class SnippetList(APIView):
+    permission_classes=[permissions.IsAuthenticatedOrReadOnly]
     def get(self,request):
         snippets = Snippet.objects.all()
         serializer = SnippetSerializer(snippets, many=True)
@@ -23,11 +25,15 @@ class SnippetList(APIView):
     def post(self,request):
         serializer=SnippetSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            self.perform_create(serializer=serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def perform_create(self, serializer):
+        serializer.save(owner = self.request.user)
 
 class SnippetDetail(APIView):
+    permission_classes=[permissions.IsAuthenticatedOrReadOnly]
 
     def get(self,request, id):
         snippet = get_object_or_404(Snippet, id=id)
@@ -47,3 +53,10 @@ class SnippetDetail(APIView):
 
 
 
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class=UserSerializer

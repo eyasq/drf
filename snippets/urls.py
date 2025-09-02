@@ -17,7 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from snippets import views
+
 urlpatterns = [
     path('snippets/', views.SnippetList.as_view()),
-    path('snippets/<int:id>/', views.SnippetDetail.as_view())
+    path('snippets/<int:id>/', views.SnippetDetail.as_view()),
+    path('users/', views.UserList.as_view()),
+    path('users/<int:pk>/', views.UserDetail.as_view())
 ]
